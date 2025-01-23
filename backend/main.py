@@ -9,7 +9,7 @@ from hooks import chatsocket
 import asyncio
 from settings.logging_config import logger
 from contextlib import asynccontextmanager
-from database import create_all_tables
+from database import create_all_tables, test_connection
 
 app = FastAPI(debug=True)
 
@@ -30,6 +30,7 @@ app.include_router(chatsocket.router)
 
 @app.on_event("startup")
 async def startup_event():
+    await test_connection()
     await create_all_tables()
 
 if __name__ == "__main__":

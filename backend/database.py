@@ -4,6 +4,7 @@ from settings.config import settings
 from settings.logging_config import logger
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import text
 import ssl
 
 # Асинхронный URL базы данных PostgreSQL
@@ -44,9 +45,15 @@ async def get_db():
         await session.close()  # Закрытие сессии вручную
 
 
+async def test_connection():
+    async with engine.connect() as conn:
+        result = await conn.execute(text("SELECT 1"))  # Используем text() для создания SQL выражения
+        print(f"Connection test result: {result.scalar()}")
+
+
 # Создание всех таблиц
 async def create_all_tables():
     async with engine.begin() as conn:
         logger.info("Creating all tables in the database...")
-        await conn.run_sync(metadata.create_all(bind=engine))
+        await conn.run_sync(metadata.create_all)
         logger.info("All tables created successfully.")
