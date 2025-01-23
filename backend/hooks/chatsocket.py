@@ -25,9 +25,9 @@ async def test_redis_connection():
         # Выполнение команды PING
         pong = await redis.ping()
         if pong:
-            print("Connected to Redis successfully!")
+            logger.info("Connected to Redis successfully!")
     except Exception as e:
-        print(f"Failed to connect to Redis: {e}")
+        logger.info(f"Failed to connect to Redis: {e}")
     finally:
         # Закрываем соединение
         await redis.close()

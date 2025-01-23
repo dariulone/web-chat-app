@@ -40,7 +40,7 @@ async def get_session() -> AsyncSession:
 async def test_connection():
     async with engine.connect() as conn:
         result = await conn.execute(text("SELECT 1"))  # Используем text() для создания SQL выражения
-        print(f"Connection test result: {result.scalar()}")
+        logger.info(f"Connection test result: {result.scalar()}")
 
 
 # Создание всех таблиц
