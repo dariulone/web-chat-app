@@ -9,6 +9,7 @@ from hooks import chatsocket
 import asyncio
 from settings.logging_config import logger
 from database import create_all_tables, test_connection
+from hooks.chatsocket import test_redis_connection
 
 app = FastAPI(debug=True)
 asyncio.set_event_loop_policy(asyncio.DefaultEventLoopPolicy())
@@ -31,6 +32,8 @@ app.include_router(chatsocket.router)
 async def startup_event():
     await test_connection()
     await create_all_tables()
+    await test_redis_connection()
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)

@@ -18,6 +18,20 @@ redis_url = settings.REDIS_URL
 # Подключение к Redis
 redis = Redis.from_url(redis_url, decode_responses=True)
 
+
+async def test_redis_connection():
+    redis = Redis.from_url(redis_url, decode_responses=True)
+    try:
+        # Выполнение команды PING
+        pong = await redis.ping()
+        if pong:
+            print("Connected to Redis successfully!")
+    except Exception as e:
+        print(f"Failed to connect to Redis: {e}")
+    finally:
+        # Закрываем соединение
+        await redis.close()
+
 # Менеджер соединений
 class ConnectionManager:
     def __init__(self):
