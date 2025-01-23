@@ -42,6 +42,3 @@ This is a real-time web chat application built with **FastAPI** on the backend a
 ![Screenshot](https://github.com/user-attachments/assets/b4ca69e0-b43c-437e-bf8e-a5f851d20df7)
 ![Screenshot](https://github.com/user-attachments/assets/86763e64-5daa-4351-acf3-4647d4ee06a3)
 
----
-
-Feel free to add installation and usage instructions if required.
