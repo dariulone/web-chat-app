@@ -7,7 +7,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from database import get_db
+from database import get_session
 from models import ChatMessage, User
 from settings.logging_config import logger
 import base64
@@ -520,7 +520,7 @@ async def handle_reaction(data, user_id):
 
 
 @router.websocket("/ws/chat/{user_id}")
-async def chat_endpoint(websocket: WebSocket, user_id: int, db: AsyncSession = Depends(get_db)):
+async def chat_endpoint(websocket: WebSocket, user_id: int, db: AsyncSession = Depends(get_session)):
     user_id = str(user_id)
     await manager.connect(websocket, user_id)
     logger.info(f"User {user_id} connected. Active connections: {manager.get_active_connections_count()}")  # Без await

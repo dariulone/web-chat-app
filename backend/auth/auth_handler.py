@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import text
 from sqlalchemy.future import select
 from settings.config import settings
-from database import get_db
+from database import get_session
 from schemas import TokenData
 from models import User
 
@@ -64,7 +64,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)) -> Optional[User]:
+async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_session)) -> Optional[User]:
     """Получает текущего пользователя из токена."""
     if not token:
         raise HTTPException(

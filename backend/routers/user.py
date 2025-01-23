@@ -4,7 +4,7 @@ from auth.auth_handler import get_current_active_user
 from sqlalchemy.future import select
 from models import User, Notification
 from schemas import UserResponse, NotificationBase, NotificationResponse, UpdateUserProfile
-from database import get_db
+from database import get_session
 from typing import List, Optional
 from hooks.chatsocket import notify_profile_update
 
@@ -30,7 +30,7 @@ async def read_users_me(current_user: User = Depends(get_current_active_user)):
 async def get_user_profile_by_id(
         user_id: int,
         current_user: Optional[User] = Depends(get_current_active_user),  # Сделано опциональным
-        db: AsyncSession = Depends(get_db)
+        db: AsyncSession = Depends(get_session)
 ):
     # Запрос для поиска пользователя по ID
     result = await db.execute(select(User).filter(User.id == user_id))
@@ -52,7 +52,7 @@ async def get_user_profile_by_id(
 async def get_user_profile_by_username(
         username: str,
         current_user: Optional[User] = Depends(get_current_active_user),
-        db: AsyncSession = Depends(get_db)
+        db: AsyncSession = Depends(get_session)
 ):
     # Запрос для поиска пользователя по username
     result = await db.execute(select(User).filter(User.username == username))
@@ -74,7 +74,7 @@ async def get_user_profile_by_username(
 async def update_user_profile(
     data: UpdateUserProfile,
     current_user: User = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_session)
 ):
     # Запрос для поиска пользователя
     result = await db.execute(select(User).filter(User.id == current_user.id))
@@ -104,7 +104,7 @@ async def update_user_profile(
 
 # Эндпоинт для поиска пользователей по имени пользователя
 @router.get("/search_user_by_username", response_model=List[UserResponse])
-async def search_users(query: str, db: AsyncSession = Depends(get_db)):
+async def search_users(query: str, db: AsyncSession = Depends(get_session)):
     if not query:
         raise HTTPException(status_code=400, detail="Query parameter is required")
 

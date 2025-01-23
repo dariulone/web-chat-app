@@ -4,7 +4,7 @@ from jwt import decode, exceptions as jwt_exceptions
 from typing import List
 from auth.auth_handler import SECRET_KEY, ALGORITHM
 from models import User, Notification
-from database import get_db
+from database import get_session
 from settings.logging_config import logger
 
 router = APIRouter()
