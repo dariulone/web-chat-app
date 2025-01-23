@@ -1,5 +1,5 @@
 {
-  "devCommand": "uvicorn main:app --host 0.0.0.0 --port 8000",
+  "devCommand": "uvicorn main:app --host 0.0.0.0 --port 8000 --loop asyncio",
   "builds": [
     {
       "src": "main.py",

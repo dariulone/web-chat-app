@@ -7,8 +7,12 @@ from schemas import UserResponse, NotificationBase, NotificationResponse, Update
 from database import get_session
 from typing import List, Optional
 from hooks.chatsocket import notify_profile_update
+import asyncio
 
 router = APIRouter()
+
+
+asyncio.set_event_loop_policy(asyncio.DefaultEventLoopPolicy())
 
 
 # Эндпоинт для получения текущего пользователя
