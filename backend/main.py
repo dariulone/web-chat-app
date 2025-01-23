@@ -8,11 +8,10 @@ from routers import user
 from hooks import chatsocket
 import asyncio
 from settings.logging_config import logger
-from contextlib import asynccontextmanager
 from database import create_all_tables, test_connection
 
 app = FastAPI(debug=True)
-
+asyncio.set_event_loop_policy(asyncio.DefaultEventLoopPolicy())
 origin = settings.ALLOWED_ORIGIN
 
 app.add_middleware(
