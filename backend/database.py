@@ -48,5 +48,5 @@ async def get_db():
 async def create_all_tables():
     async with engine.begin() as conn:
         logger.info("Creating all tables in the database...")
-        await conn.run_sync(metadata.create_all)
+        await conn.run_sync(metadata.create_all(bind=engine))
         logger.info("All tables created successfully.")
