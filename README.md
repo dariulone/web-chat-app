@@ -14,11 +14,11 @@ This is a real-time web chat application built with **FastAPI** on the backend a
 
 ## Features
 
-- **Debounced Search** – Smooth and efficient search functionality for messages and users.
+- **Debounced Search** – Smooth and efficient search functionality for users.
 - **Message Delivery Confirmation** – All sent messages are confirmed by the server.
 - **Message Reactions** – Add reactions (e.g., likes) to messages.
 - **Images and Replies** – Send images and reply to specific messages.
-- **Message Deletion** – Remove your own messages.
+- **Message Deletion** – Remove any messages.
 - **User Status** – Displays users' status: online, offline, or last seen time.
 - **Profile Editing** – Users can update their profile details.
 - **Light/Dark Theme** – Toggle between light and dark modes for the app.
