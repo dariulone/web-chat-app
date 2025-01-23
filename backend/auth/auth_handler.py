@@ -38,18 +38,20 @@ def get_password_hash(password: str) -> str:
 
 # Работа с пользователями
 async def get_user(db: AsyncSession, username: str) -> Optional[User]:
-    result = await db.execute(select(User).where(User.username == username))
-    return result.scalars().first()
+    async with get_session() as db:
+        result = await db.execute(select(User).where(User.username == username))
+        return result.scalars().first()
 
 
 async def authenticate_user(db: AsyncSession, username: str, password: str) -> Optional[User]:
-    """Проверяет учетные данные пользователя."""
-    user = await get_user(db, username)
-    if not user:
-        return False
-    if not verify_password(password, user.hashed_password):
-        return False
-    return user
+    async with get_session() as db:
+        """Проверяет учетные данные пользователя."""
+        user = await get_user(db, username)
+        if not user:
+            return False
+        if not verify_password(password, user.hashed_password):
+            return False
+        return user
 
 
 # Генерация и проверка токенов
@@ -64,39 +66,40 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_session)) -> Optional[User]:
-    """Получает текущего пользователя из токена."""
-    if not token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authentication token is missing",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: int = int(payload.get("sub"))  # Получаем id из токена
-        if not user_id:
+async def get_current_user(token: str = Depends(oauth2_scheme)) -> Optional[User]:
+    async with get_session() as db:
+        """Получает текущего пользователя из токена."""
+        if not token:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token: subject is missing",
+                detail="Authentication token is missing",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-    except ExpiredSignatureError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token has expired",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    except InvalidTokenError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token is invalid",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            user_id: int = int(payload.get("sub"))  # Получаем id из токена
+            if not user_id:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid token: subject is missing",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+        except ExpiredSignatureError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token has expired",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        except InvalidTokenError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token is invalid",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
-    # Получаем пользователя из базы данных
-    user = await db.execute(select(User).where(User.id == int(user_id)))
-    return user.scalars().first()
+        # Получаем пользователя из базы данных
+        user = await db.execute(select(User).where(User.id == int(user_id)))
+        return user.scalars().first()
 
 
 async def get_current_active_user(current_user: Optional[User] = Depends(get_current_user)) -> Optional[User]:

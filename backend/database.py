@@ -13,8 +13,12 @@ DATABASE_URL = settings.DB_URL  # Например: postgresql+asyncpg://user:pa
 
 # Создание асинхронного подключения
 engine = create_async_engine(
-    DATABASE_URL
+    DATABASE_URL,
+    pool_size=10,  # Количество соединений в пуле
+    max_overflow=20,  # Дополнительные соединения
+    future=True
 )
+
 
 # Сессия SQLAlchemy для асинхронных операций
 async_session = sessionmaker(

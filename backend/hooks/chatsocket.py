@@ -520,7 +520,8 @@ async def handle_reaction(data, user_id):
 
 
 @router.websocket("/ws/chat/{user_id}")
-async def chat_endpoint(websocket: WebSocket, user_id: int, db: AsyncSession = Depends(get_session)):
+async def chat_endpoint(websocket: WebSocket, user_id: int):
+
     user_id = str(user_id)
     await manager.connect(websocket, user_id)
     logger.info(f"User {user_id} connected. Active connections: {manager.get_active_connections_count()}")  # Без await
@@ -531,62 +532,62 @@ async def chat_endpoint(websocket: WebSocket, user_id: int, db: AsyncSession = D
         while True:
             data = await websocket.receive_text()
             logger.info(f"Received data from {user_id}: {data}")
+            async with get_session() as db:
+                try:
+                    data = json.loads(data)
+                except json.JSONDecodeError:
+                    await websocket.send_text(json.dumps({"error": "Invalid JSON"}))
+                    continue
 
-            try:
-                data = json.loads(data)
-            except json.JSONDecodeError:
-                await websocket.send_text(json.dumps({"error": "Invalid JSON"}))
-                continue
+                message_type = data.get("type")
 
-            message_type = data.get("type")
+                if message_type == "message":
+                    await handle_message(data, user_id)
 
-            if message_type == "message":
-                await handle_message(data, user_id)
+                elif message_type == "ping":
+                    await set_user_status(user_id, "online")  # Удостоверимся, что статус актуален
+                    await notify_status_change(user_id, "online")  # Уведомляем о статусе "online"
 
-            elif message_type == "ping":
-                await set_user_status(user_id, "online")  # Удостоверимся, что статус актуален
-                await notify_status_change(user_id, "online")  # Уведомляем о статусе "online"
+                elif message_type == "reply":
+                    await handle_reply(data, user_id)  # Обработка реплаев
 
-            elif message_type == "reply":
-                await handle_reply(data, user_id)  # Обработка реплаев
+                elif message_type == "history_request":
+                    await handle_history_request(websocket, data, user_id)
 
-            elif message_type == "history_request":
-                await handle_history_request(websocket, data, user_id)
+                elif message_type == "contact_list_request":
+                    await handle_contact_list_request(websocket, db, user_id)
 
-            elif message_type == "contact_list_request":
-                await handle_contact_list_request(websocket, db, user_id)
+                elif message_type == "image":  # Обрабатываем изображение
+                    await handle_image(data, user_id)
+                    # Обработка запроса mark_as_read
+                elif message_type == "mark_as_read":
+                    chat_id = str(data["chat_id"])  # ID чата (ID отправителя)
+                    read_timestamps = await mark_messages_as_read(user_id, chat_id)
 
-            elif message_type == "image":  # Обрабатываем изображение
-                await handle_image(data, user_id)
-                # Обработка запроса mark_as_read
-            elif message_type == "mark_as_read":
-                chat_id = str(data["chat_id"])  # ID чата (ID отправителя)
-                read_timestamps = await mark_messages_as_read(user_id, chat_id)
+                    # Уведомляем отправителя
+                    sender_websocket = manager.active_connections.get(chat_id)
+                    if sender_websocket:
+                        await sender_websocket.send_text(json.dumps({
+                            "type": "read_status_update",
+                            "chat_id": user_id,  # ID пользователя, который прочитал
+                            "timestamps": read_timestamps
+                        }))
 
-                # Уведомляем отправителя
-                sender_websocket = manager.active_connections.get(chat_id)
-                if sender_websocket:
-                    await sender_websocket.send_text(json.dumps({
-                        "type": "read_status_update",
-                        "chat_id": user_id,  # ID пользователя, который прочитал
-                        "timestamps": read_timestamps
-                    }))
+                    # Уведомляем текущего пользователя (обновить локальные данные)
+                    recipient_websocket = manager.active_connections.get(user_id)
+                    if recipient_websocket:
+                        await recipient_websocket.send_text(json.dumps({
+                            "type": "read_status_update",
+                            "chat_id": chat_id,  # ID собеседника
+                            "timestamps": read_timestamps
+                        }))
+                elif message_type == "delete_message":
+                    message_id = data["message_id"]  # ID сообщения
+                    chat_id = data["chat_id"]  # ID чата
+                    await handle_delete_message(message_id, chat_id, user_id)
 
-                # Уведомляем текущего пользователя (обновить локальные данные)
-                recipient_websocket = manager.active_connections.get(user_id)
-                if recipient_websocket:
-                    await recipient_websocket.send_text(json.dumps({
-                        "type": "read_status_update",
-                        "chat_id": chat_id,  # ID собеседника
-                        "timestamps": read_timestamps
-                    }))
-            elif message_type == "delete_message":
-                message_id = data["message_id"]  # ID сообщения
-                chat_id = data["chat_id"]  # ID чата
-                await handle_delete_message(message_id, chat_id, user_id)
-
-            elif message_type == "reaction":
-                await handle_reaction(data, user_id)
+                elif message_type == "reaction":
+                    await handle_reaction(data, user_id)
 
     except WebSocketDisconnect:
         await manager.disconnect(user_id)
