@@ -11,6 +11,9 @@ DATABASE_URL = settings.DB_URL  # Например: postgresql+asyncpg://user:pa
 # Создание асинхронного подключения
 engine = create_async_engine(
     DATABASE_URL,
+    connect_args={
+            "ssl": True  # Указывает, что нужно использовать SSL
+        },
     pool_size=20,  # Размер пула соединений
     max_overflow=30,  # Максимальное количество переполнений
     pool_timeout=30,  # Тайм-аут для получения соединения из пула
