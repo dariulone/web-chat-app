@@ -18,7 +18,7 @@ export const WebSocketProvider = ({ user, children }) => {
     let pingInterval;
 
     const connectWebSocket = () => {
-      ws = new WebSocket(`ws://${import.meta.env.VITE_API_URL}/ws/chat/${user.id}`);
+      ws = new WebSocket(`wss://${import.meta.env.VITE_WEBSOCKET_URL}/ws/chat/${user.id}`);
 
       ws.onopen = () => {
         console.log("WebSocket connected");
