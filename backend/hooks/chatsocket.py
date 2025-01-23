@@ -520,7 +520,7 @@ async def handle_reaction(data, user_id):
 
 
 @router.websocket("/ws/chat/{user_id}")
-async def chat_endpoint(websocket: WebSocket, user_id: int):
+async def chat_endpoint(websocket: WebSocket, user_id: int, db: AsyncSession = Depends(get_session)):
 
     user_id = str(user_id)
     await manager.connect(websocket, user_id)
@@ -533,6 +533,7 @@ async def chat_endpoint(websocket: WebSocket, user_id: int):
             data = await websocket.receive_text()
             logger.info(f"Received data from {user_id}: {data}")
             async with get_session() as db:
+
                 try:
                     data = json.loads(data)
                 except json.JSONDecodeError:
