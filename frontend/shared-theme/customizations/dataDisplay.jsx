@@ -18,6 +18,20 @@ export const dataDisplayCustomizations = {
       },
     },
   },
+  MuiBox: {
+    styleOverrides: {
+      root: ({ theme }) => ({
+        backgroundColor: "white",
+        '&:active': {
+          border: "2px solid gray[800]",
+        },
+        ...theme.applyStyles('dark', {
+          borderColor: gray[700],
+          backgroundColor: gray[800],
+        }),
+      }),
+    },
+  },
   MuiListItem: {
     styleOverrides: {
       root: ({ theme }) => ({
@@ -84,6 +98,17 @@ export const dataDisplayCustomizations = {
       root: {
         minWidth: 0,
       },
+    },
+  },
+  MuiPopper: {
+    styleOverrides: {
+      root: ({ theme }) => ({
+        backgroundColor: "white",
+        ...theme.applyStyles('dark', {
+          borderColor: gray[700],
+          backgroundColor: gray[800],
+        }),
+      }),
     },
   },
   MuiChip: {

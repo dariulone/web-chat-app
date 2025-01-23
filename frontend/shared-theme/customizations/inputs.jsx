@@ -361,9 +361,30 @@ export const inputsCustomizations = {
   },
   MuiInputBase: {
     styleOverrides: {
-      root: {
-        border: 'none',
-      },
+      root: ({ theme }) => ({
+        padding: '8px 12px',
+        color: gray[800],
+        borderRadius: (theme.vars || theme).shape.borderRadius,
+        border: `1px solid ${gray[300]}`,
+        backgroundColor: 'white',
+        transition: 'border 120ms ease-in',
+        '&:hover': {
+          borderColor: '#9000ff',
+        },
+        [`&.${outlinedInputClasses.focused}`]: {
+          //outline: '2px solid #9000ff', // Задаём цвет и толщину обводки
+          //outlineOffset: '2px', // Добавляем отступ между элементом и обводкой
+          borderColor: '#9000ff',
+        },
+        ...theme.applyStyles('dark', {
+          backgroundColor: gray[800],
+          color: "white",
+          border: `1px solid ${gray[700]}`,
+          '&:hover': {
+            borderColor: '#9000ff',
+          },
+        }),
+      }),
       input: {
         '&::placeholder': {
           opacity: 0.7,

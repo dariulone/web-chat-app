@@ -4,7 +4,7 @@ import { FiChevronUp } from "react-icons/fi";
 import StyledBadge from './StyledBadge';
 import { User, SignOut } from "phosphor-react";
 import { useSettingsProfileModal } from "../contexts/SettingsProfileModalContext";
-
+import ColorModeIconDropdown from '../../shared-theme/ColorModeIconDropdown';
 
 const UserBar = ({ user }) => {
   if (!user) {
@@ -77,6 +77,7 @@ const UserBar = ({ user }) => {
         <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleOpenMenu(e); }}>
           <FiChevronUp />
         </IconButton>
+        <ColorModeIconDropdown size="medium" />
 
         {/* Dropdown меню */}
         <Menu

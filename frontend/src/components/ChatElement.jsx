@@ -15,16 +15,13 @@ const ChatElement = ({id, username, profile_image, msg, time, status, unread, on
         width: "100%",
         //borderRadius: 2,
         padding: 1,
-        backgroundColor: theme.palette.mode === 'light'? "#fff" : "theme.palette.background.default",
+        //backgroundColor: theme.palette.mode === 'light'? "#fff" : "theme.palette.background.default",
         cursor: "pointer",
         '&:hover': {
           backgroundColor: theme.palette.primary.main,
           color: "#fff"
         },
-        '&:active': {
-          border: "2px solid",
-        },
-        backgroundColor: isSelected ? `${theme.palette.primary.main}` : "#fff", // Рамка для выбранного чата
+        backgroundColor: isSelected ? `${theme.palette.primary.main}` : "none", // Рамка для выбранного чата
         color: isSelected ? "#fff" : "none",
       }}
         p={1}>

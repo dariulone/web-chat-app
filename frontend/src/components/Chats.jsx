@@ -9,6 +9,7 @@ import { searchUserByUsername } from '../server-side/userprofile';
 import { debounce } from 'lodash'; // Подключение debounce
 import UserBar from './UserBar';
 
+
 const Chats = ({ user, setSelectedChatId, setSelectedRecipient, setRecipientAvatar }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Проверка на мобильные устройства (например, ширина меньше 600px)
@@ -145,9 +146,9 @@ const Chats = ({ user, setSelectedChatId, setSelectedRecipient, setRecipientAvat
             borderRadius: "16px",
             flexGrow: 1,
             pl: 1, // Отступ для текста после иконки
-            // border: "1px solid #ddd", // Пример стиля для границы
+            //border: "1px solid #3e3e3e", // Пример стиля для границы
             // borderRadius: "8px",
-            backgroundColor: "#fff", // Цвет фона
+            //backgroundColor: "#fff", // Цвет фона
           }}
           startAdornment={
             <InputAdornment position="start">
@@ -195,7 +196,7 @@ const Chats = ({ user, setSelectedChatId, setSelectedRecipient, setRecipientAvat
                 maxHeight: 200, 
                 width: '100%', 
                 overflow: 'auto', 
-                backgroundColor: 'white', 
+                //backgroundColor: 'white', 
                 border: '1px solid #ccc', 
                 margin: 0,
                 padding: 1,
