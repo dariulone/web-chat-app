@@ -10,6 +10,7 @@ This is a real-time web chat application built with **FastAPI** on the backend a
 
 ## Architecture
 **Frontend**: React Vite, Material UI, motion, emoji-mart
+
 **Backend**: FastAPI, PostgreSQL, Redis
 
 ## Features
