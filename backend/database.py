@@ -1,3 +1,4 @@
+from sqlalchemy import MetaData
 from models import Base
 from settings.config import settings
 from settings.logging_config import logger
@@ -23,6 +24,8 @@ AsyncSessionLocal = sessionmaker(
     expire_on_commit=False,
 )
 
+# Метаданные базы данных
+metadata = Base.metadata
 
 
 # Получаем асинхронную сессию
